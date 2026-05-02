@@ -1,84 +1,36 @@
-# Generador de Tarjetas - Algoritmo Luhn (Educativo)
+# Generador de Tarjetas Luhn
 
-Software educativo para aprender el algoritmo Luhn y la estructura de tarjetas bancarias.
-
-**SOLO PARA FINES EDUCATIVOS** - No valida ni usa tarjetas reales.
-
----
-
-## Estructura del Proyecto
-
-```
-tarjeta-luhn-app/
-├── include/
-│   └── tarjeta.h          # Header con declaraciones
-├── src/
-│   └── tarjeta.c          # Implementacion en C
-├── gui.py                 # Interfaz grafica Python
-├── tarjeta.dll            # Compilado (generar con pasos abajo)
-└── README.md              # Este archivo
-```
-
----
-
-## Funciones en C
-
-| Funcion | Descripcion |
-|---------|-------------|
-| `generar_numero_tarjeta(marca)` | Genera numero ficticio valido (0=Visa, 1=MC, 2=Amex) |
-| `identificar_marca(numero)` | Identifica la marca del numero |
-| `generar_fecha_vencimiento()` | Genera fecha MM/AA |
-| `generar_cvv()` | Genera 3 digitos |
-| `formatear_numero(numero)` | Formatea con espacios |
-
----
-
-## Compilar en Windows
-
-### Paso 1: Abrir Developer Command Prompt
-
-Busca "x64 Native Tools Command Prompt" en el menu inicio.
-
-### Paso 2: Ir al directorio src
-
-```batch
-cd ruta\a\tarjeta-luhn-app\src
-```
-
-### Paso 3: Compilar
-
-```batch
-cl /LD /Fe:..\tarjeta.dll tarjeta.c
-```
-
-### Paso 4: Verificar
-
-```batch
-dir ..\tarjeta.dll
-```
-
-Si existe, la compilacion fue exitosa.
-
----
-
-## Ejecutar
-
-```batch
-cd ruta\a\tarjeta-luhn-app
-python gui.py
-```
-
----
+Generador de tarjetas de credito ficticias con validacion Luhn. Solo con fines educativos.
 
 ## Requisitos
 
 - Python 3.x
-- Visual Studio (para compilar C)
+- Tkinter (incluido en Python)
 
----
+## Uso
 
-## Marcas Soportadas
+```bash
+python gui.py
+```
 
-- **Visa**: Inicia con 4
-- **Mastercard**: Inicia con 51-55
-- **American Express**: Inicia con 34 o 37
+## Caracteristicas
+
+- **BIN**: Ingresa el BIN/IIN (primeras 6-8 digitos). Usa `X` para digitos aleatorios.
+  - Si ingresas menos de 16 digitos, se completa automaticamente con `X`
+  - Si el BIN no pasa la validacion Luhn, muestra error
+
+- **Marca**: Se detecta automaticamente por el primer digito:
+  - `3` → American Express
+  - `4` → Visa
+  - `5` → Mastercard
+  - `6` → Discover
+
+- **Fecha**: Mes/Ano. Selecciona `RND` para fecha aleatoria.
+
+- **CVV**: 3 digitos o `XXX` para aleatorio.
+
+- **Cantidad**: Numero de tarjetas a generar (1-100).
+
+## Formato de Salida
+
+Los numeros de tarjeta se generan sin espacios (ej: `4111111111111111`).

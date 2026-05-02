@@ -12,13 +12,17 @@ def algoritmo_luhn(numero):
     return suma % 10 == 0
 
 def identificar_marca(bin_code):
-    if bin_code.startswith("4"): return "Visa"
+    first = bin_code[0] if bin_code else ""
+    if first == "3": return "American Express"
+    if first == "4": return "Visa"
+    if first == "5": return "Mastercard"
+    if first == "6": return "Discover"
     if bin_code[:2] in ["51","52","53","54","55"]: return "Mastercard"
     if bin_code[:2] in ["34","37"]: return "American Express"
     return "Aleatorio"
 
 def formatear_numero(numero):
-    return " ".join([numero[i:i+4] for i in range(0, len(numero), 4)])
+    return numero
 
 def generar_tarjeta_completa(bin_base):
     while True:
@@ -48,22 +52,22 @@ class TarjetaGUI:
         cfg.pack(fill=tk.X, pady=(0, 8))
 
         ttk.Label(cfg, text="BIN (IIN):").grid(row=0, column=0, sticky=tk.W, pady=3)
-        self.bin_var = tk.StringVar(value="4")
+        self.bin_var = tk.StringVar(value="4000XXXXXXXXXXXX")
         ttk.Entry(cfg, textvariable=self.bin_var, width=25).grid(row=0, column=1, sticky=tk.W, padx=(8, 0), pady=3)
         ttk.Label(cfg, text="(X=aleatorio)").grid(row=0, column=2, sticky=tk.W, padx=(5, 0))
 
         ttk.Label(cfg, text="Fecha:").grid(row=1, column=0, sticky=tk.W, pady=3)
         self.mes_var = tk.StringVar(value="12")
         self.mes_combo = ttk.Combobox(cfg, textvariable=self.mes_var, width=5, state="readonly")
-        self.mes_combo["values"] = [f"{i:02d}" for i in range(1, 13)]
-        self.mes_combo.current(11)
+        self.mes_combo["values"] = ["RND"] + [f"{i:02d}" for i in range(1, 13)]
+        self.mes_combo.current(0)
         self.mes_combo.grid(row=1, column=1, sticky=tk.W, padx=(8, 0), pady=3)
         ttk.Label(cfg, text="/").grid(row=1, column=1, padx=(50, 0), sticky=tk.W)
 
         self.ano_var = tk.StringVar()
         self.ano_combo = ttk.Combobox(cfg, textvariable=self.ano_var, width=5, state="readonly")
         anos = [str(datetime.now().year + i)[-2:] for i in range(10)]
-        self.ano_combo["values"] = anos
+        self.ano_combo["values"] = ["RND"] + anos
         self.ano_combo.current(0)
         self.ano_combo.grid(row=1, column=1, sticky=tk.W, padx=(75, 0), pady=3)
 
@@ -113,7 +117,14 @@ class TarjetaGUI:
             if not b or not all(c.isdigit() or c == "X" for c in b):
                 self._err("BIN invalido (solo numeros o X)"); return
 
+            if "X" not in b:
+                dif = 16 - len(b)
+                if dif > 0:
+                    b = b + "X" * dif
+
             tmp = b.replace("X", "0")[:15]
+            if "X" not in b and tmp and not algoritmo_luhn(tmp + "0"):
+                self._err("ERROR BIN NO VALIDO"); return
             marca = identificar_marca(tmp) if len(tmp) >= 2 else "Aleatorio"
 
             c = self.cant_var.get().strip()
@@ -121,13 +132,19 @@ class TarjetaGUI:
                 self._err("Cantidad invalida (solo numeros)"); return
             cant = max(1, min(int(c), 100))
 
-            fecha = f"{self.mes_var.get()}/{self.ano_var.get()}"
+            mes = self.mes_var.get()
+            ano = self.ano_var.get()
+            if mes == "RND":
+                mes = f"{random.randrange(1, 13):02d}"
+            if ano == "RND":
+                ano = str(random.randrange(int(datetime.now().year), int(datetime.now().year) + 10))[-2:]
+            fecha = f"{mes}/{ano}"
 
             cvv = self.cvv_var.get().strip().upper()
             if cvv == "" or cvv == "XXX":
                 rnd_cvv = True
             else:
-                if "X" in cvv or not cvv.isdigit() or len(cvv) < 3:
+                if "X" in cvv or not cvv.isdigit() or len(cvv) != 3:
                     self._err("CVV invalido: use 3 digitos, XXX, o deje vacio"); return
                 rnd_cvv = False
 
