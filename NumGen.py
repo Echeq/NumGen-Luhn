@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import random
 from datetime import datetime
+import os
 
 translations = {
     "en": {
@@ -18,6 +19,7 @@ translations = {
         "clear": "Clear",
         "minimize": "Minimize",
         "copy": "Copy",
+        "export": "Export",
         "err_bin": "BIN invalid (numbers or X only)",
         "err_bin_luhn": "ERROR BIN INVALID",
         "err_qty": "Invalid quantity (numbers only)",
@@ -26,6 +28,7 @@ translations = {
         "brand": "Random",
         "lang": "Language",
         "about": "About",
+        "exported": "Exported",
     },
     "es": {
         "title": "NumGen - Generador de Tarjetas",
@@ -41,6 +44,7 @@ translations = {
         "clear": "Limpiar",
         "minimize": "Minimizar",
         "copy": "Copiar",
+        "export": "Exportar",
         "err_bin": "BIN invalido (solo numeros o X)",
         "err_bin_luhn": "ERROR BIN NO VALIDO",
         "err_qty": "Cantidad invalida (solo numeros)",
@@ -49,6 +53,7 @@ translations = {
         "brand": "Aleatorio",
         "lang": "Idioma",
         "about": "Acerca de",
+        "exported": "Exportado",
     },
     "pt": {
         "title": "NumGen - Gerador de Cartoes",
@@ -64,6 +69,7 @@ translations = {
         "clear": "Limpar",
         "minimize": "Minimizar",
         "copy": "Copiar",
+        "export": "Exportar",
         "err_bin": "BIN invalido (apenas numeros ou X)",
         "err_bin_luhn": "ERRO BIN INVALIDO",
         "err_qty": "Quantidade invalida (apenas numeros)",
@@ -72,14 +78,15 @@ translations = {
         "brand": "Aleatorio",
         "lang": "Idioma",
         "about": "Sobre",
+        "exported": "Exportado",
     },
     "ru": {
         "title": "NumGen - Генератор Карт",
         "header": "NumGen - Генератор Карт",
-        "warn": "ТОЛЬКО ДЛЯ ОБРАЗОВАТЕЛЬНЦЕГО ИСПОЛЬЗОВАНИЯ - Незаконное использование запрещено",
+        "warn": "ТОЛЬКО ДЛЯ ОБРАЗОВАНИЯ - Незаконное использование запрещено",
         "config": "Конфигурация",
         "bin": "BIN:",
-        "date": "Да��а:",
+        "date": "Дата:",
         "cvv": "CVV:",
         "qty": "Количество:",
         "generate": "СОЗДАТЬ",
@@ -87,6 +94,7 @@ translations = {
         "clear": "Очистить",
         "minimize": "Свернуть",
         "copy": "Копировать",
+        "export": "Экспорт",
         "err_bin": "BIN недействителен (только цифры или X)",
         "err_bin_luhn": "ОШИБКА BIN НЕДЕЙСТВИТЕЛЕН",
         "err_qty": "Неверное количество (только цифры)",
@@ -95,6 +103,7 @@ translations = {
         "brand": "Случайный",
         "lang": "Язык",
         "about": "О программе",
+        "exported": "Экспортировано",
     },
     "zh": {
         "title": "NumGen - 卡片生成器",
@@ -110,6 +119,7 @@ translations = {
         "clear": "清除",
         "minimize": "最小化",
         "copy": "复制",
+        "export": "导出",
         "err_bin": "BIN无效（仅数字或X）",
         "err_bin_luhn": "错误 BIN无效",
         "err_qty": "数量无效（仅数字）",
@@ -118,6 +128,7 @@ translations = {
         "brand": "随机",
         "lang": "语言",
         "about": "关于",
+        "exported": "已导出",
     },
 }
 
@@ -161,7 +172,7 @@ class TarjetaGUI:
 
     def _build_ui(self):
         self.root.title(self.t["title"])
-        self.root.geometry("430x460")
+        self.root.geometry("430x480")
         self.root.configure(bg="#f0f0f0")
         self.root.resizable(False, False)
 
@@ -218,14 +229,19 @@ class TarjetaGUI:
         self.cant_var = tk.StringVar(value="1")
         ttk.Entry(cfg, textvariable=self.cant_var, width=18).grid(row=3, column=1, columnspan=2, sticky=tk.W, padx=(8, 0), pady=4)
 
-        ttk.Button(cfg, text=self.t["generate"], command=self._generar).grid(row=4, column=0, columnspan=3, pady=12)
+        btn_frame = ttk.Frame(cfg)
+        btn_frame.grid(row=4, column=0, columnspan=3, pady=12)
+        self.btn_generate = ttk.Button(btn_frame, text=self.t["generate"], command=self._generar)
+        self.btn_generate.pack(side=tk.LEFT, padx=2)
+        self.btn_export = ttk.Button(btn_frame, text=self.t["export"], command=self._export, state=tk.DISABLED)
+        self.btn_export.pack(side=tk.LEFT, padx=2)
 
         res = ttk.LabelFrame(main, text=self.t["results"], padding="8")
         res.pack(fill=tk.BOTH, expand=True)
 
         scroll = ttk.Scrollbar(res, orient=tk.VERTICAL)
         scroll.pack(side=tk.RIGHT, fill=tk.Y)
-        self.txt = tk.Text(res, height=10, width=42, font=("Courier", 9), yscrollcommand=scroll.set, state=tk.DISABLED)
+        self.txt = tk.Text(res, height=12, width=42, font=("Courier", 9), yscrollcommand=scroll.set, state=tk.DISABLED)
         self.txt.pack(fill=tk.BOTH, expand=True)
         scroll.config(command=self.txt.yview)
         self.txt.bind("<Double-Button-1>", self._on_double_click)
@@ -320,7 +336,7 @@ is strictly prohibited."""
             c = self.cant_var.get().strip()
             if not c.isdigit() or "-" in c:
                 self._err(self.t["err_qty"]); return
-            cant = max(1, min(int(c), 100))
+            cant = max(1, min(int(c), 999999999))
 
             mes = self.mes_var.get()
             ano = self.ano_var.get()
@@ -345,6 +361,7 @@ is strictly prohibited."""
                 self.txt.insert(tk.END, f"{num}|{mes}|20{ano}|{cvv_o}\n")
             self.txt.see(tk.END)
             self.txt.config(state=tk.DISABLED)
+            self.btn_export.config(state=tk.NORMAL)
         except Exception as e:
             self.txt.config(state=tk.NORMAL)
             self.txt.insert(tk.END, f"{self.t['error']}: {e}\n")
@@ -354,10 +371,39 @@ is strictly prohibited."""
         self.txt.config(state=tk.NORMAL)
         self.txt.delete(1.0, tk.END)
         self.txt.config(state=tk.DISABLED)
+        self.btn_export.config(state=tk.DISABLED)
 
     def _copiar(self):
         self.root.clipboard_clear()
         self.root.clipboard_append(self.txt.get(1.0, tk.END))
+
+    def _export(self):
+        content = self.txt.get(1.0, tk.END).strip()
+        if not content:
+            return
+        lines = content.split("\n")
+        bin_used = ""
+        output_lines = []
+        for line in lines:
+            if "|" in line and not line.startswith("---"):
+                parts = line.split("|")
+                if len(parts) >= 4:
+                    output_lines.append(line)
+                    if not bin_used:
+                        bin_used = parts[0]
+        if not output_lines:
+            return
+        output_dir = os.path.join(os.getcwd(), "output")
+        os.makedirs(output_dir, exist_ok=True)
+        now = datetime.now()
+        fecha = now.strftime("%Y%m%d")
+        hora = now.strftime("%H%M%S")
+        bin_name = bin_used[:4] if bin_used else "BIN"
+        filename = f"{bin_name}_{fecha}_{hora}.txt"
+        filepath = os.path.join(output_dir, filename)
+        with open(filepath, "w") as f:
+            f.write("\n".join(output_lines))
+        self._err(self.t["exported"] + f" to output/{filename}")
 
 if __name__ == "__main__":
     root = tk.Tk()
