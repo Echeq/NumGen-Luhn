@@ -10,7 +10,7 @@ Generador de tarjetas de credito ficticias con validacion Luhn. Solo con fines e
 ## Uso
 
 ```bash
-python gui.py
+python NumGen.py
 ```
 
 ## Caracteristicas

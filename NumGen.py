@@ -114,7 +114,7 @@ class TarjetaGUI:
         self.txt.config(state=tk.DISABLED)
         try:
             b = self.bin_var.get().strip().upper()
-            if not b or not all(c.isdigit() or c == "X" for c in b):
+            if not b or not all(c.isdigit() or c == "X" for c in b) or "-" in b:
                 self._err("BIN invalido (solo numeros o X)"); return
 
             if "X" not in b:
@@ -128,7 +128,7 @@ class TarjetaGUI:
             marca = identificar_marca(tmp) if len(tmp) >= 2 else "Aleatorio"
 
             c = self.cant_var.get().strip()
-            if not c.isdigit():
+            if not c.isdigit() or "-" in c:
                 self._err("Cantidad invalida (solo numeros)"); return
             cant = max(1, min(int(c), 100))
 
@@ -144,7 +144,7 @@ class TarjetaGUI:
             if cvv == "" or cvv == "XXX":
                 rnd_cvv = True
             else:
-                if "X" in cvv or not cvv.isdigit() or len(cvv) != 3:
+                if "X" in cvv or not cvv.isdigit() or len(cvv) != 3 or "-" in cvv:
                     self._err("CVV invalido: use 3 digitos, XXX, o deje vacio"); return
                 rnd_cvv = False
 
@@ -153,8 +153,7 @@ class TarjetaGUI:
             for _ in range(cant):
                 num = generar_tarjeta_completa(b)
                 cvv_o = generar_cvv_random() if rnd_cvv else cvv
-                self.txt.insert(tk.END, f"Numero: {formatear_numero(num)}\n")
-                self.txt.insert(tk.END, f"  Fecha: {fecha} | CVV: {cvv_o}\n\n")
+                self.txt.insert(tk.END, f"{num}|{mes}|20{ano}|{cvv_o}\n")
             self.txt.see(tk.END)
             self.txt.config(state=tk.DISABLED)
         except Exception as e:
