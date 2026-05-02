@@ -1,10 +1,17 @@
 # NumGen
 Educational Luhn algorithm pattern generator — Open Source project for academic learning only.
 
+<p align="center">
+  <img src="https://i.postimg.cc/XvJWVM1p/Screenshot-2.png" alt="NumGen App Screenshot" width="350">
+</p>
+
 ## About
 NumGen is a desktop application built in Python and Tkinter that generates **fictional numerical patterns compliant with the Luhn algorithm**.
 This project is designed exclusively for **educational and academic purposes** to study card number structures and the Luhn check algorithm.
 
+<p align="center">
+  <img src="https://images.stripeassets.com/3sz5ney9ml0h/7mBN701LWvnXJPPU9NaqUx/2381a57b9cddf1df499e1b02e0ef5515/The-Luhn-algorithm-illustrated.png?w=1812&q=80" alt="The Luhn algorithm illustrated" width="600">
+</p>
 ## Requirements
 - Python 3.x
 - Tkinter (included with standard Python installations)
