@@ -42,8 +42,8 @@ BIN|MONTH|YEAR|CVV
 ```
 
 ## Installation
-No external dependencies are required beyond Python itself.
-To package the application into a **Windows executable**, install PyInstaller:
+- Option 1: Download the latest [release or pre-release](https://github.com/Echeq/NumGen-Luhn/releases/download/v1.0/NumGen.-.v1.0.exe) of NumGen (WINDOWS)
+- Option 2: To package the application into a **Windows executable**, install PyInstaller:
 
 ```bash
 pip install pyinstaller
