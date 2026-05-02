@@ -1,36 +1,51 @@
-# Generador de Tarjetas Luhn
+# NumGen
 
-Generador de tarjetas de credito ficticias con validacion Luhn. Solo con fines educativos.
+Card number generator with Luhn validation.
 
-## Requisitos
+## Requirements
 
 - Python 3.x
-- Tkinter (incluido en Python)
+- Tkinter (included in Python)
 
-## Uso
+## Install
+
+```bash
+pip install pyinstaller
+```
+
+## Run
 
 ```bash
 python NumGen.py
 ```
 
-## Caracteristicas
+## Build .exe
 
-- **BIN**: Ingresa el BIN/IIN (primeras 6-8 digitos). Usa `X` para digitos aleatorios.
-  - Si ingresas menos de 16 digitos, se completa automaticamente con `X`
-  - Si el BIN no pasa la validacion Luhn, muestra error
+```bash
+pyinstaller --onefile --windowed NumGen.py
+```
 
-- **Marca**: Se detecta automaticamente por el primer digito:
-  - `3` → American Express
-  - `4` → Visa
-  - `5` → Mastercard
-  - `6` → Discover
+The executable will be in `dist/NumGen.exe`.
 
-- **Fecha**: Mes/Ano. Selecciona `RND` para fecha aleatoria.
+## Usage
 
-- **CVV**: 3 digitos o `XXX` para aleatorio.
+- **BIN**: First digit determines the brand
+  - 3 = American Express
+  - 4 = Visa
+  - 5 = Mastercard
+  - 6 = Discover
+  - X = random
 
-- **Cantidad**: Numero de tarjetas a generar (1-100).
+- **Date**: Select month/year or RND for random
+- **CVV**: 3 digits or XXX for random
+- **Quantity**: Number of cards to generate
 
-## Formato de Salida
+## Output format
 
-Los numeros de tarjeta se generan sin espacios (ej: `4111111111111111`).
+```
+BIN|MES|YEAR|CVV
+```
+
+## Warning
+
+This software is for educational use only. Illegal use is prohibited.
