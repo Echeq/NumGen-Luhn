@@ -1,3 +1,10 @@
+## Readme Language
+
+[中文](readmes/README.zh.md)
+[Русский](readmes/README.ru.md)
+[Português](readmes/README.pt.md)
+[Español](readmes/READMEtr.md)
+
 # NumGen
 Educational Luhn algorithm pattern generator — Open Source project for academic learning only.
 
